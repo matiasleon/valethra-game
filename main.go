@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"saturday-chill/models"
+	"saturday-chill/core/entities"
 )
 
 func main() {
@@ -11,22 +11,22 @@ func main() {
 }
 
 func testQuest() {
-	batman := &models.Character{
+	batman := &entities.Character{
 		ID:          "1",
 		Name:        "Batman",
 		Description: "Batman is a superhero who fights crime in Gotham City.",
-		Attributes: models.Attributes{
+		Attributes: entities.Attributes{
 			Health:      100,
 			AttackPower: 70,
 			Armor:       100,
 		},
 	}
 
-	superman := &models.Character{
+	superman := &entities.Character{
 		ID:          "2",
 		Name:        "Superman",
 		Description: "Superman is a superhero who fights crime in Metropolis.",
-		Attributes: models.Attributes{
+		Attributes: entities.Attributes{
 			Health:      10000,
 			AttackPower: 10000,
 			Armor:       10000,
