@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"saturday-chill/core/entities"
+	"saturday-chill/core/ports"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -26,6 +27,7 @@ type CombatScene struct {
 	enemy     *entities.Character
 	heroMax   entities.Attributes
 	enemyMax  entities.Attributes
+	engine    ports.CombatEngine
 	round     int
 	state     CombatState
 	combatLog []string
@@ -35,13 +37,14 @@ type CombatScene struct {
 	enemyFlash int
 }
 
-func NewCombatScene(quest entities.Quest, hero, enemy *entities.Character) *CombatScene {
+func NewCombatScene(quest entities.Quest, hero, enemy *entities.Character, engine ports.CombatEngine) *CombatScene {
 	return &CombatScene{
 		quest:     quest,
 		hero:      hero,
 		enemy:     enemy,
 		heroMax:   hero.Attributes,
 		enemyMax:  enemy.Attributes,
+		engine:    engine,
 		round:     1,
 		state:     StatePlaying,
 		combatLog: []string{"El combate comienza... [SPACE/ENTER para atacar]"},
@@ -85,22 +88,21 @@ func (c *CombatScene) executeRound() {
 	c.combatLog = append(c.combatLog, fmt.Sprintf("-- Ronda %d --", c.round))
 
 	// Hero attacks
-	result := c.hero.Attack(c.enemy)
-	c.combatLog = append(c.combatLog, cleanLog(result))
+	result := c.engine.ExecuteRound(c.hero, c.enemy)
+	c.combatLog = append(c.combatLog, cleanLog(result.HeroAction))
 	c.enemyFlash = 15 // Flash for 15 frames
 
-	if c.enemy.Attributes.Health <= 0 {
+	if result.EnemyDead {
 		c.state = StateVictory
 		c.combatLog = append(c.combatLog, fmt.Sprintf("%s ha sido derrotado!", c.enemy.Name))
 		return
 	}
 
 	// Enemy attacks
-	result = c.enemy.Attack(c.hero)
-	c.combatLog = append(c.combatLog, cleanLog(result))
+	c.combatLog = append(c.combatLog, cleanLog(result.EnemyAction))
 	c.heroFlash = 15
 
-	if c.hero.Attributes.Health <= 0 {
+	if result.HeroDead {
 		c.state = StateDefeat
 		c.combatLog = append(c.combatLog, fmt.Sprintf("%s ha caido en combate!", c.hero.Name))
 		return

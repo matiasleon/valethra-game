@@ -13,11 +13,11 @@ La defensa consta únicamente de:
 
 ## Mecánica de Ataque
 
-1. **Si el ataque es mayor a la armadura:**
+1. **Si el ataque es mayor o igual a la armadura (y armor > 0):**
    - El personaje objetivo **muere** (Health = 0)
    - La armadura se reduce a 0
 
-2. **Si el ataque es menor o igual a la armadura:**
+2. **Si el ataque es menor a la armadura:**
    - El ataque **impacta la armadura** (se resta del Armor)
    - No hay daño al Health
 
@@ -27,7 +27,7 @@ La defensa consta únicamente de:
 
 ## Resumen
 
-- **Armor**: Se reduce con cada ataque. Si el ataque supera la armadura, el personaje muere.
+- **Armor**: Se reduce con cada ataque. Si el ataque iguala o supera la armadura, el personaje muere.
 - **Health**: 
   - Se afecta si el ataque supera la armadura (muerte instantánea)
   - Se afecta progresivamente si Armor = 0 (el ataque va directamente a Health)

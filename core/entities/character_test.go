@@ -146,7 +146,7 @@ func TestAttack_TargetAlreadyDefeated_ReturnsError(t *testing.T) {
 
 	result := attacker.Attack(defender)
 
-	if !strings.Contains(result, "cannot attack") || !strings.Contains(result, "already defeated") {
+	if !strings.Contains(result, "no puede atacar") || !strings.Contains(result, "derrotado") {
 		t.Errorf("Expected error message about defeated target, got: %s", result)
 	}
 }

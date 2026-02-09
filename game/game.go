@@ -1,7 +1,9 @@
+// Package game provides ebiten runtime and scenes.
 package game
 
 import (
 	"saturday-chill/core/entities"
+	"saturday-chill/core/ports"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -15,9 +17,9 @@ type Game struct {
 	combat *CombatScene
 }
 
-func NewGame(quest entities.Quest, hero, enemy *entities.Character) *Game {
+func NewGame(quest entities.Quest, hero, enemy *entities.Character, engine ports.CombatEngine) *Game {
 	return &Game{
-		combat: NewCombatScene(quest, hero, enemy),
+		combat: NewCombatScene(quest, hero, enemy, engine),
 	}
 }
 

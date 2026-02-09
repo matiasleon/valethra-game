@@ -24,46 +24,40 @@ type Character struct {
 }
 
 // Attack performs an attack on the target character.
-// If attack exceeds armor, character dies. Otherwise, armor is reduced.
-// If armor is 0, damage goes directly to health.
+// If armor > 0 and attack >= armor, character dies instantly.
+// If armor > 0 and attack < armor, only armor is reduced.
+// If armor == 0, damage goes directly to health progressively.
 func (c *Character) Attack(target *Character) string {
-	// Check if target is already defeated
 	if target.Attributes.Health <= 0 {
-		return fmt.Sprintf("%s cannot attack %s - target is already defeated\n", c.Name, target.Name)
+		return fmt.Sprintf("%s no puede atacar a %s — ya ha sido derrotado\n", c.Name, target.Name)
 	}
 
 	attackPower := c.Attributes.AttackPower
 	armor := target.Attributes.Armor
 
-	// Si el ataque es mayor a la armadura, el personaje muere
-	if attackPower > armor {
+	// Si tiene armadura y el ataque es mayor o igual, muerte instantánea
+	if armor > 0 && attackPower >= armor {
 		target.Attributes.Armor = 0
 		target.Attributes.Health = 0
-		return fmt.Sprintf("%s attacks %s. Attack exceeds armor (%d > %d). %s dies!\n",
+		return fmt.Sprintf("%s ataca a %s. El ataque destroza la armadura (%d >= %d). %s cae derrotado!\n",
 			c.Name, target.Name, attackPower, armor, target.Name)
 	}
 
-	// Si el ataque es menor o igual a la armadura, solo se reduce la armadura
+	// Si tiene armadura y el ataque es menor, solo reduce armadura
 	if armor > 0 {
-		initialArmor := target.Attributes.Armor
 		target.Attributes.Armor -= attackPower
-		if target.Attributes.Armor < 0 {
-			target.Attributes.Armor = 0
-		}
-		armorReduced := initialArmor - target.Attributes.Armor
-		return fmt.Sprintf("%s attacks %s. Armor reduced by %d. %s has %d health and %d armor remaining.\n",
-			c.Name, target.Name, armorReduced, target.Name, target.Attributes.Health, target.Attributes.Armor)
+		return fmt.Sprintf("%s ataca a %s. Armadura reducida en %d. %s tiene %d de vida y %d de armadura.\n",
+			c.Name, target.Name, attackPower, target.Name, target.Attributes.Health, target.Attributes.Armor)
 	}
 
-	// Si no tiene armadura (Armor = 0), el ataque va directamente a Health
-	healthDamage := attackPower
-	target.Attributes.Health -= healthDamage
+	// Sin armadura: daño progresivo a health
+	target.Attributes.Health -= attackPower
 	if target.Attributes.Health < 0 {
 		target.Attributes.Health = 0
 	}
 
-	return fmt.Sprintf("%s attacks %s. No armor! Health damaged by %d. %s has %d health remaining.\n",
-		c.Name, target.Name, healthDamage, target.Name, target.Attributes.Health)
+	return fmt.Sprintf("%s ataca a %s. Sin armadura! Daño directo: %d. %s tiene %d de vida.\n",
+		c.Name, target.Name, attackPower, target.Name, target.Attributes.Health)
 }
 
 func (c *Character) Spell(target *Character) string {

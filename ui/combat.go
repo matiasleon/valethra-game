@@ -1,3 +1,4 @@
+// Package ui provides terminal UI models and views.
 package ui
 
 import (
@@ -8,12 +9,14 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"saturday-chill/core/entities"
+	"saturday-chill/core/ports"
 )
 
 var (
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(lipgloss.Color("205")).
+			PaddingTop(1).
 			MarginBottom(1)
 
 	heroStyle = lipgloss.NewStyle().
@@ -35,7 +38,8 @@ var (
 
 	logStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("245")).
-			MarginTop(1)
+			PaddingLeft(2).
+			MarginTop(0)
 
 	helpStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("241")).
@@ -50,6 +54,11 @@ var (
 			Bold(true).
 			Foreground(lipgloss.Color("196")).
 			MarginTop(1)
+
+	eventVictoryStyle = lipgloss.NewStyle().
+				Bold(true).
+				Foreground(lipgloss.Color("226")).
+				MarginTop(1)
 )
 
 type CombatModel struct {
@@ -60,22 +69,20 @@ type CombatModel struct {
 	enemyMax   entities.Attributes
 	round      int
 	combatLog  []string
-	gameOver   bool
-	heroWon    bool
+	state      ports.CombatState
+	eventIndex int
+	session    ports.CombatSession
+	width      int
+	height     int
 }
 
-func NewCombatModel(quest entities.Quest, hero *entities.Character, enemy *entities.Character) CombatModel {
-	return CombatModel{
-		quest:     quest,
-		hero:      hero,
-		enemy:     enemy,
-		heroMax:   hero.Attributes,
-		enemyMax:  enemy.Attributes,
-		round:     1,
-		combatLog: []string{"El combate comienza..."},
-		gameOver:  false,
-		heroWon:   false,
-	}
+func NewCombatModel(session ports.CombatSession) CombatModel {
+	model := CombatModel{session: session}
+	return model.applyState(session.State())
+}
+
+func (m CombatModel) HeroWon() bool {
+	return m.state == ports.StateQuestVictory
 }
 
 func (m CombatModel) Init() tea.Cmd {
@@ -84,59 +91,56 @@ func (m CombatModel) Init() tea.Cmd {
 
 func (m CombatModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "ctrl+c":
 			return m, tea.Quit
 		case " ", "enter", "a":
-			if m.gameOver {
+			switch m.state {
+			case ports.StateQuestVictory, ports.StateDefeat:
 				return m, tea.Quit
+			default:
+				return m.applyState(m.session.Handle(ports.ActionConfirm)), nil
 			}
-			return m.executeRound(), nil
 		}
 	}
 	return m, nil
 }
 
-func (m CombatModel) executeRound() CombatModel {
-	m.combatLog = append(m.combatLog, fmt.Sprintf("-- Ronda %d --", m.round))
-
-	result := m.hero.Attack(m.enemy)
-	m.combatLog = append(m.combatLog, cleanLog(result))
-
-	if m.enemy.Attributes.Health <= 0 {
-		m.gameOver = true
-		m.heroWon = true
-		m.combatLog = append(m.combatLog, fmt.Sprintf("%s ha sido derrotado!", m.enemy.Name))
-		return m
-	}
-
-	result = m.enemy.Attack(m.hero)
-	m.combatLog = append(m.combatLog, cleanLog(result))
-
-	if m.hero.Attributes.Health <= 0 {
-		m.gameOver = true
-		m.heroWon = false
-		m.combatLog = append(m.combatLog, fmt.Sprintf("%s ha caído en combate!", m.hero.Name))
-		return m
-	}
-
-	m.round++
+func (m CombatModel) applyState(state ports.CombatStateDTO) CombatModel {
+	m.quest = state.Quest
+	m.hero = state.Hero
+	m.enemy = state.Enemy
+	m.heroMax = state.HeroMax
+	m.enemyMax = state.EnemyMax
+	m.round = state.Round
+	m.state = state.State
+	m.combatLog = state.CombatLog
+	m.eventIndex = state.EventIndex
 	return m
-}
-
-func cleanLog(s string) string {
-	return strings.TrimSpace(s)
 }
 
 func (m CombatModel) View() string {
 	var b strings.Builder
 
-	b.WriteString(titleStyle.Render(fmt.Sprintf("=== %s ===", m.quest.Title)))
+	title := fmt.Sprintf("=== %s ===", m.quest.Title)
+	if len(m.quest.Events) > 1 {
+		title += fmt.Sprintf("  [Encuentro %d/%d]", m.eventIndex+1, len(m.quest.Events))
+	}
+	b.WriteString(titleStyle.Render(title))
 	b.WriteString("\n\n")
 
-	if len(m.quest.Events) > 0 {
-		b.WriteString(m.quest.Events[0].Description)
+	if m.eventIndex < len(m.quest.Events) {
+		desc := m.quest.Events[m.eventIndex].Description
+		maxWidth := m.width - 4
+		if maxWidth < 40 {
+			maxWidth = 80
+		}
+		b.WriteString(lipgloss.NewStyle().Width(maxWidth).Render(desc))
 		b.WriteString("\n\n")
 	}
 
@@ -154,16 +158,23 @@ func (m CombatModel) View() string {
 		b.WriteString("\n")
 	}
 
-	if m.gameOver {
+	switch m.state {
+	case ports.StateQuestVictory:
 		b.WriteString("\n")
-		if m.heroWon {
-			b.WriteString(victoryStyle.Render("¡VICTORIA! " + m.hero.Name + " ha triunfado."))
-		} else {
-			b.WriteString(defeatStyle.Render("DERROTA. " + m.hero.Name + " ha caído."))
-		}
+		b.WriteString(victoryStyle.Render("¡VICTORIA! " + m.hero.Name + " ha completado la misión."))
+		b.WriteString("\n")
+		b.WriteString(helpStyle.Render("Presiona cualquier tecla para continuar."))
+	case ports.StateEventVictory:
+		b.WriteString("\n")
+		b.WriteString(eventVictoryStyle.Render(m.enemy.Name + " derrotado! Pero el camino continúa..."))
+		b.WriteString("\n")
+		b.WriteString(helpStyle.Render("Presiona cualquier tecla para el siguiente encuentro."))
+	case ports.StateDefeat:
+		b.WriteString("\n")
+		b.WriteString(defeatStyle.Render("DERROTA. " + m.hero.Name + " ha caído."))
 		b.WriteString("\n")
 		b.WriteString(helpStyle.Render("Presiona cualquier tecla para salir."))
-	} else {
+	case ports.StateFighting:
 		b.WriteString(helpStyle.Render("[A/Enter/Space] Atacar • [Q] Salir"))
 	}
 
