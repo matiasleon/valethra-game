@@ -4,8 +4,6 @@ Un RPG de combate táctico por turnos ambientado en un mundo de fantasía adulta
 
 Juega como **Aldric**, un mercenario sin tierra que acepta los contratos que nadie más quiere. Cruza puentes infestados de trolls, adentrarte en bosques corrompidos, y enfrenta enemigos cada vez más peligrosos en un mundo que no recompensa la bondad — pero que la necesita.
 
-![Valethra Screenshot](docs/screenshot.png) *(si tenés un screenshot, agregalo a `/docs/screenshot.png`)*
-
 ---
 
 ## ¿De qué va esto?
@@ -155,7 +153,7 @@ Este proyecto está bajo licencia **MIT**. Hacé lo que quieras con el código, 
 
 - **Sprites**: [itch.io](https://itch.io/game-assets/free) (revisar carpeta `assets/` para atribuciones específicas)
 - **Engine**: [Ebiten](https://ebiten.org/)
-- **Inspiración**: Darkest Dungeon, Slay the Spire, The Witcher (la novela, no el juego)
+- **Inspiración**: DoD, The Witcher (la novela, no el juego), Warhammer Fantasy
 
 ---
 
