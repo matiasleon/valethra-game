@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"saturday-chill/core/entities"
+	entityactions "saturday-chill/core/entities/actions"
 	"saturday-chill/core/ports"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -19,21 +20,6 @@ const (
 	StatePlaying CombatState = iota
 	StateVictory
 	StateDefeat
-)
-
-const spriteScale = 3
-const (
-	nameYOffset       = -20
-	healthBarOffset   = 10
-	healthTextOffset  = 25
-	armorBarOffset    = 45
-	armorTextOffset   = 60
-	attackTextOffset  = 80
-	hudPadding        = 20
-	logHeaderHeight   = 20
-	logLineHeight     = 16
-	statusBarHeight   = 30
-	minLogLines       = 2
 )
 
 type CombatScene struct {
@@ -55,15 +41,23 @@ type CombatScene struct {
 	// Loader for enemy sprites per event
 	enemySpriteDir string
 	enemyFlipX     bool
+
+	// Layout
+	layoutCfg LayoutConfig
+	layoutMgr *LayoutManager
 }
 
 func NewCombatScene(quest entities.Quest, hero *entities.Character, engine ports.CombatEngine, heroSprites, enemySprites *CharacterSprites) *CombatScene {
-	// Start with first event's first enemy
+	// Get combat action from first event (supports both new Actions and legacy Enemies)
 	var enemy *entities.Character
-	if len(quest.Events) > 0 && len(quest.Events[0].Enemies) > 0 {
-		enemy = &quest.Events[0].Enemies[0]
+	if len(quest.Events) > 0 {
+		enemies := combatEnemiesFromEvent(quest.Events[0])
+		if len(enemies) > 0 {
+			enemy = &enemies[0]
+		}
 	}
 
+	layoutCfg := DefaultLayoutConfig(ScreenWidth, ScreenHeight)
 	cs := &CombatScene{
 		quest:        quest,
 		hero:         hero,
@@ -76,6 +70,8 @@ func NewCombatScene(quest entities.Quest, hero *entities.Character, engine ports
 		heroSprites:  heroSprites,
 		enemySprites: enemySprites,
 		eventIndex:   0,
+		layoutCfg:    layoutCfg,
+		layoutMgr:    NewLayoutManager(layoutCfg),
 	}
 	if enemy != nil {
 		cs.enemyMax = enemy.Attributes
@@ -195,10 +191,14 @@ func (c *CombatScene) executeRound() {
 func (c *CombatScene) advanceToNextEvent() {
 	c.eventIndex++
 	event := c.quest.Events[c.eventIndex]
-	if len(event.Enemies) > 0 {
-		c.enemy = &c.quest.Events[c.eventIndex].Enemies[0]
+
+	// Get combat action from the new event.
+	enemies := combatEnemiesFromEvent(event)
+	if len(enemies) > 0 {
+		c.enemy = &enemies[0]
 		c.enemyMax = c.enemy.Attributes
 	}
+
 	c.round = 1
 	c.state = StatePlaying
 	c.waitingNext = false
@@ -216,6 +216,16 @@ func (c *CombatScene) advanceToNextEvent() {
 	}
 }
 
+func combatEnemiesFromEvent(event entities.Event) []entities.Character {
+	// New model: actions list.
+	action := event.GetFirstActionByType(entities.ActionCombat)
+	if combat, ok := action.(*entityactions.CombatAction); ok {
+		return combat.Enemies
+	}
+	// Legacy fallback.
+	return event.Enemies
+}
+
 // HeroWon returns true if the combat ended in victory.
 func (c *CombatScene) HeroWon() bool {
 	return c.state == StateVictory
@@ -229,101 +239,73 @@ func (c *CombatScene) Draw(screen *ebiten.Image) {
 	// Background
 	screen.Fill(color.RGBA{30, 30, 40, 255})
 
+	// Compute layout for this frame
+	title := c.quest.Title
+	layout := c.layoutMgr.Compute(len(title), c.heroSprites, c.enemySprites)
+
 	// Title
-	title := fmt.Sprintf("=== %s ===", c.quest.Title)
-	ebitenutil.DebugPrintAt(screen, title, 20, 20)
+	ebitenutil.DebugPrintAt(screen, title, layout.TitleX, layout.TitleY)
 
-	// Event description (current event)
+	// Event description
 	if c.eventIndex < len(c.quest.Events) {
-		desc := wrapText(c.quest.Events[c.eventIndex].Description, 90)
-		ebitenutil.DebugPrintAt(screen, desc, 20, 50)
+		desc := wrapText(c.quest.Events[c.eventIndex].Description, c.layoutCfg.WrapWidth)
+		ebitenutil.DebugPrintAt(screen, desc, layout.EventDescX, layout.EventDescY)
 	}
 
-	// Hero (left side)
-	heroX := 100
-	enemyX := 500
-	spriteY := 180
-	c.drawCharacterWithSprite(screen, c.hero, &c.heroMax, heroX, spriteY, c.heroSprites)
+	// Characters
+	c.drawCharacter(screen, c.hero, &c.heroMax, layout.Hero, c.heroSprites)
+	c.drawCharacter(screen, c.enemy, &c.enemyMax, layout.Enemy, c.enemySprites)
 
-	// Enemy (right side)
-	c.drawCharacterWithSprite(screen, c.enemy, &c.enemyMax, enemyX, spriteY, c.enemySprites)
+	// Combat log
+	c.drawCombatLog(screen, layout.LogX, layout.LogY, layout.LogMaxLines)
 
-	// Combat log (dinámico según altura disponible)
-	_, heroH := spriteDimensions(c.heroSprites)
-	_, enemyH := spriteDimensions(c.enemySprites)
-	maxSpriteHeight := heroH
-	if enemyH > maxSpriteHeight {
-		maxSpriteHeight = enemyH
-	}
-	hudBottom := spriteY + maxSpriteHeight + attackTextOffset
-	logTop := hudBottom + hudPadding
-	statusTop := ScreenHeight - statusBarHeight
-	availableLogHeight := statusTop - logTop - hudPadding
-	maxLines := (availableLogHeight - logHeaderHeight) / logLineHeight
-	if maxLines < minLogLines {
-		maxLines = minLogLines
-		logTop = statusTop - (logHeaderHeight + (maxLines * logLineHeight)) - hudPadding
-	}
-	c.drawCombatLog(screen, 20, logTop, maxLines)
-
-	// Controls / End state
-	c.drawStatus(screen)
+	// Status bar
+	c.drawStatus(screen, layout.StatusBarY, layout.StatusTextY)
 }
 
-func (c *CombatScene) drawCharacterWithSprite(screen *ebiten.Image, char *entities.Character, max *entities.Attributes, x, y int, sprites *CharacterSprites) {
-	frameWidth := 100
-	frameHeight := 100
-
-	// Dibujar sprite animado
+func (c *CombatScene) drawCharacter(screen *ebiten.Image, char *entities.Character, max *entities.Attributes, layout CharacterLayout, sprites *CharacterSprites) {
+	// Draw sprite
 	if sprites != nil {
 		frame := sprites.Animator.CurrentFrame()
 		if frame != nil {
 			op := &ebiten.DrawImageOptions{}
-			frameWidth = frame.Bounds().Dx()
-			frameHeight = frame.Bounds().Dy()
-
-			// Si FlipX está activado, espejar horizontalmente
 			if sprites.FlipX {
-				op.GeoM.Scale(-spriteScale, spriteScale)              // Escala negativa en X = espejo
-				op.GeoM.Translate(float64(frameWidth)*spriteScale, 0) // Compensar porque el espejo mueve la imagen
+				op.GeoM.Scale(-c.layoutCfg.SpriteScale, c.layoutCfg.SpriteScale)
+				op.GeoM.Translate(float64(layout.SpriteW), 0)
 			} else {
-				op.GeoM.Scale(spriteScale, spriteScale)
+				op.GeoM.Scale(c.layoutCfg.SpriteScale, c.layoutCfg.SpriteScale)
 			}
-
-			op.GeoM.Translate(float64(x), float64(y))
+			op.GeoM.Translate(float64(layout.X), float64(layout.Y))
 			screen.DrawImage(frame, op)
 		}
 	} else {
-		// Fallback: rectángulo si no hay sprites
-		drawRect(screen, x, y, int(float64(frameWidth)*spriteScale), int(float64(frameHeight)*spriteScale), color.RGBA{100, 100, 100, 255})
+		// Fallback rectangle
+		drawRect(screen, layout.X, layout.Y, layout.SpriteW, layout.SpriteH, color.RGBA{100, 100, 100, 255})
 	}
 
-	spriteWidth := int(float64(frameWidth) * spriteScale)
-	spriteHeight := int(float64(frameHeight) * spriteScale)
-	barWidth := spriteWidth
-	nameX := x + (spriteWidth / 2) - (len(char.Name) * 3)
-
-	// Name (centrado sobre el sprite)
-	ebitenutil.DebugPrintAt(screen, char.Name, nameX, y+nameYOffset)
+	// Name (centered above sprite)
+	nameX := layout.X + (layout.SpriteW / 2) - (len(char.Name) * c.layoutCfg.CharWidthPX / 2)
+	nameY := layout.Y + c.layoutCfg.NameYOffset
+	ebitenutil.DebugPrintAt(screen, char.Name, nameX, nameY)
 
 	// Health bar
 	healthPct := float64(char.Attributes.Health) / float64(max.Health)
-	c.drawBar(screen, x, y+spriteHeight+healthBarOffset, barWidth, 12, healthPct, color.RGBA{80, 180, 80, 255}, color.RGBA{60, 60, 60, 255})
+	c.drawBar(screen, layout.X, layout.HealthBarY, layout.BarWidth, c.layoutCfg.BarHeight, healthPct, color.RGBA{80, 180, 80, 255}, color.RGBA{60, 60, 60, 255})
 	healthText := fmt.Sprintf("HP: %d/%d", char.Attributes.Health, max.Health)
-	ebitenutil.DebugPrintAt(screen, healthText, x, y+spriteHeight+healthTextOffset)
+	ebitenutil.DebugPrintAt(screen, healthText, layout.X, layout.HealthTextY)
 
 	// Armor bar
 	armorPct := 0.0
 	if max.Armor > 0 {
 		armorPct = float64(char.Attributes.Armor) / float64(max.Armor)
 	}
-	c.drawBar(screen, x, y+spriteHeight+armorBarOffset, barWidth, 12, armorPct, color.RGBA{80, 140, 200, 255}, color.RGBA{60, 60, 60, 255})
+	c.drawBar(screen, layout.X, layout.ArmorBarY, layout.BarWidth, c.layoutCfg.BarHeight, armorPct, color.RGBA{80, 140, 200, 255}, color.RGBA{60, 60, 60, 255})
 	armorText := fmt.Sprintf("Armor: %d/%d", char.Attributes.Armor, max.Armor)
-	ebitenutil.DebugPrintAt(screen, armorText, x, y+spriteHeight+armorTextOffset)
+	ebitenutil.DebugPrintAt(screen, armorText, layout.X, layout.ArmorTextY)
 
 	// Attack power
 	atkText := fmt.Sprintf("ATK: %d", char.Attributes.AttackPower)
-	ebitenutil.DebugPrintAt(screen, atkText, x, y+spriteHeight+attackTextOffset)
+	ebitenutil.DebugPrintAt(screen, atkText, layout.X, layout.AttackTextY)
 }
 
 func (c *CombatScene) drawBar(screen *ebiten.Image, x, y, width, height int, pct float64, fillColor, bgColor color.Color) {
@@ -345,7 +327,9 @@ func (c *CombatScene) drawBar(screen *ebiten.Image, x, y, width, height int, pct
 }
 
 func (c *CombatScene) drawCombatLog(screen *ebiten.Image, x, y, maxLines int) {
-	ebitenutil.DebugPrintAt(screen, "--- Combat Log ---", x, y)
+	header := "--- Combat Log ---"
+	headerX := (c.layoutCfg.ScreenWidth / 2) - (len(header) * c.layoutCfg.CharWidthPX / 2)
+	ebitenutil.DebugPrintAt(screen, header, headerX, y)
 
 	start := 0
 	if len(c.combatLog) > maxLines {
@@ -355,29 +339,14 @@ func (c *CombatScene) drawCombatLog(screen *ebiten.Image, x, y, maxLines int) {
 	for i, log := range c.combatLog[start:] {
 		// Truncate long lines
 		displayLog := log
-		if len(displayLog) > 95 {
-			displayLog = displayLog[:92] + "..."
+		if len(displayLog) > c.layoutCfg.LogMaxLineLen {
+			displayLog = displayLog[:c.layoutCfg.LogMaxLineLen-3] + "..."
 		}
-		ebitenutil.DebugPrintAt(screen, displayLog, x, y+logHeaderHeight+(i*logLineHeight))
+		ebitenutil.DebugPrintAt(screen, displayLog, x, y+c.layoutCfg.LogHeaderHeight+(i*c.layoutCfg.LogLineHeight))
 	}
 }
 
-func spriteDimensions(sprites *CharacterSprites) (int, int) {
-	if sprites == nil {
-		size := int(100 * spriteScale)
-		return size, size
-	}
-	frame := sprites.Animator.CurrentFrame()
-	if frame == nil {
-		size := int(100 * spriteScale)
-		return size, size
-	}
-	w := int(float64(frame.Bounds().Dx()) * spriteScale)
-	h := int(float64(frame.Bounds().Dy()) * spriteScale)
-	return w, h
-}
-
-func (c *CombatScene) drawStatus(screen *ebiten.Image) {
+func (c *CombatScene) drawStatus(screen *ebiten.Image, statusBarY, statusTextY int) {
 	var status string
 	statusColor := color.RGBA{200, 200, 200, 255}
 
@@ -393,10 +362,11 @@ func (c *CombatScene) drawStatus(screen *ebiten.Image) {
 	}
 
 	// Draw status bar background
-	drawRect(screen, 0, ScreenHeight-30, ScreenWidth, 30, color.RGBA{40, 40, 50, 255})
+	drawRect(screen, 0, statusBarY, c.layoutCfg.ScreenWidth, c.layoutCfg.StatusBarHeight, color.RGBA{40, 40, 50, 255})
 
 	_ = statusColor // TODO: use colored text when available
-	ebitenutil.DebugPrintAt(screen, status, 20, ScreenHeight-22)
+	statusX := (c.layoutCfg.ScreenWidth / 2) - (len(status) * c.layoutCfg.CharWidthPX / 2)
+	ebitenutil.DebugPrintAt(screen, status, statusX, statusTextY)
 }
 
 func drawRect(screen *ebiten.Image, x, y, width, height int, clr color.Color) {

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"saturday-chill/core/entities"
+	entityactions "saturday-chill/core/entities/actions"
 	"saturday-chill/game"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -60,21 +61,26 @@ func createTrollQuest() entities.Quest {
 		Events: []entities.Event{
 			{
 				Description: "Aldric llega al puente de Varnock al anochecer. El olor a carne quemada y huesos apilados confirma los rumores. Grukh emerge de las sombras bajo el puente, con un garrote improvisado.",
-				Enemies: []entities.Character{
-					{
-						ID:          "enemy-1",
-						Name:        "Grukh",
-						Description: "Un troll exiliado de su clan que se instaló bajo el puente de Varnock, cobrando peaje a los viajeros.",
-						Attributes: entities.Attributes{
-							Health:       150,
-							AttackPower:  35,
-							Armor:        60,
-							Agility:      5,
-							Intelligence: 4,
-							Willpower:    8,
-							Speed:        6,
-							Level:        4,
+				Actions: []entities.ActionEvent{
+					&entityactions.CombatAction{
+						Enemies: []entities.Character{
+							{
+								ID:          "enemy-1",
+								Name:        "Grukh",
+								Description: "Un troll exiliado de su clan que se instaló bajo el puente de Varnock, cobrando peaje a los viajeros.",
+								Attributes: entities.Attributes{
+									Health:       150,
+									AttackPower:  35,
+									Armor:        60,
+									Agility:      5,
+									Intelligence: 4,
+									Willpower:    8,
+									Speed:        6,
+									Level:        4,
+								},
+							},
 						},
+						Desc: "Enfrentar a Grukh el Troll",
 					},
 				},
 			},
@@ -89,40 +95,48 @@ func createForestQuest() entities.Quest {
 		Events: []entities.Event{
 			{
 				Description: "Una sombra se desliza entre los troncos. Un lobo con los ojos inyectados en una luz violeta antinatural bloquea el sendero.",
-				Enemies: []entities.Character{
-					{
-						ID:          "enemy-2",
-						Name:        "Lobo Corrompido",
-						Description: "Un lobo del bosque de Varnwood corrompido por magia oscura.",
-						Attributes: entities.Attributes{
-							Health:       80,
-							AttackPower:  20,
-							Armor:        15,
-							Agility:      25,
-							Intelligence: 3,
-							Willpower:    5,
-							Speed:        22,
-							Level:        3,
+				Actions: []entities.ActionEvent{
+					&entityactions.CombatAction{
+						Enemies: []entities.Character{
+							{
+								ID:          "enemy-2",
+								Name:        "Lobo Corrompido",
+								Description: "Un lobo del bosque de Varnwood corrompido por magia oscura.",
+								Attributes: entities.Attributes{
+									Health:       80,
+									AttackPower:  20,
+									Armor:        15,
+									Agility:      25,
+									Intelligence: 3,
+									Willpower:    5,
+									Speed:        22,
+									Level:        3,
+								},
+							},
 						},
 					},
 				},
 			},
 			{
 				Description: "El bosque se abre en un claro donde los árboles están muertos. Una figura encapuchada murmura sobre un círculo de runas. Un desterrado del Cónclave de Reth.",
-				Enemies: []entities.Character{
-					{
-						ID:          "enemy-3",
-						Name:        "Hereje de Reth",
-						Description: "Un mago desterrado del Cónclave de Reth por practicar artes prohibidas.",
-						Attributes: entities.Attributes{
-							Health:       70,
-							AttackPower:  30,
-							Armor:        25,
-							Agility:      8,
-							Intelligence: 22,
-							Willpower:    18,
-							Speed:        10,
-							Level:        4,
+				Actions: []entities.ActionEvent{
+					&entityactions.CombatAction{
+						Enemies: []entities.Character{
+							{
+								ID:          "enemy-3",
+								Name:        "Hereje de Reth",
+								Description: "Un mago desterrado del Cónclave de Reth por practicar artes prohibidas.",
+								Attributes: entities.Attributes{
+									Health:       70,
+									AttackPower:  30,
+									Armor:        25,
+									Agility:      8,
+									Intelligence: 22,
+									Willpower:    18,
+									Speed:        10,
+									Level:        4,
+								},
+							},
 						},
 					},
 				},
