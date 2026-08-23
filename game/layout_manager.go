@@ -2,24 +2,24 @@ package game
 
 // CharacterLayout holds computed layout positions for a single character.
 type CharacterLayout struct {
-	X, Y         int // sprite position
-	SpriteW      int // sprite width (scaled)
-	SpriteH      int // sprite height (scaled)
-	BarWidth     int // width of health/armor bars
-	NameX        int // X position for name text
-	HealthBarY   int // Y position for health bar
-	HealthTextY  int // Y position for health text
-	ArmorBarY    int // Y position for armor bar
-	ArmorTextY   int // Y position for armor text
-	AttackTextY  int // Y position for attack text
+	X, Y        int // sprite position
+	SpriteW     int // sprite width (scaled)
+	SpriteH     int // sprite height (scaled)
+	BarWidth    int // width of health/armor bars
+	NameX       int // X position for name text
+	HealthBarY  int // Y position for health bar
+	HealthTextY int // Y position for health text
+	ArmorBarY   int // Y position for armor bar
+	ArmorTextY  int // Y position for armor text
+	AttackTextY int // Y position for attack text
 }
 
 // CombatLayout holds all precomputed layout positions for one frame.
 type CombatLayout struct {
-	TitleX, TitleY         int
-	EventDescX, EventDescY int
-	Hero                   CharacterLayout
-	Enemy                  CharacterLayout
+	TitleX, TitleY          int
+	EventDescX, EventDescY  int
+	Hero                    CharacterLayout
+	Enemy                   CharacterLayout
 	LogX, LogY, LogMaxLines int
 	StatusBarY, StatusTextY int
 }
@@ -81,10 +81,10 @@ func (lm *LayoutManager) Compute(titleLen int, heroSprites, enemySprites *Charac
 // characterLayout computes layout for a single character.
 func (lm *LayoutManager) characterLayout(x, y, spriteW, spriteH int) CharacterLayout {
 	cl := CharacterLayout{
-		X:       x,
-		Y:       y,
-		SpriteW: spriteW,
-		SpriteH: spriteH,
+		X:        x,
+		Y:        y,
+		SpriteW:  spriteW,
+		SpriteH:  spriteH,
 		BarWidth: spriteW,
 	}
 

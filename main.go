@@ -4,23 +4,23 @@ import (
 	"fmt"
 	"log"
 
-	"saturday-chill/core/entities"
-	entityactions "saturday-chill/core/entities/actions"
-	"saturday-chill/game"
+	"github.com/matiasleon/valethra/core/entities"
+	entityactions "github.com/matiasleon/valethra/core/entities/actions"
+	"github.com/matiasleon/valethra/game"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 func main() {
 	cfg := game.GameConfig{
-		Hero:   createHero(),
-		Quests: []entities.Quest{createTrollQuest(), createForestQuest()},
-		IntroTitle: "Valethra",
-		IntroText: "En las tierras de Valethra, donde los caminos son tan peligrosos como las bestias que los acechan, un mercenario sin tierra acepta los contratos que otros rechazan.\n\nSu nombre es Aldric. No busca gloria ni redención — solo monedas suficientes para sobrevivir otra semana.\n\nPero esta semana será diferente.",
+		Hero:         createHero(),
+		Quests:       []entities.Quest{createTrollQuest(), createForestQuest()},
+		IntroTitle:   "Valethra",
+		IntroText:    "En las tierras de Valethra, donde los caminos son tan peligrosos como las bestias que los acechan, un mercenario sin tierra acepta los contratos que otros rechazan.\n\nSu nombre es Aldric. No busca gloria ni redención — solo monedas suficientes para sobrevivir otra semana.\n\nPero esta semana será diferente.",
 		VictoryTitle: "Victoria",
 		VictoryText:  "Aldric limpia su espada y observa el horizonte. El bosque de Varnwood queda atrás, y con él las criaturas que lo acechaban.\n\nLos mercaderes podrán cruzar el puente. El bosque sanará con el tiempo. Y Aldric tendrá monedas para otra semana.\n\nPero en Valethra, la calma nunca dura. Su leyenda apenas comienza.",
-		DefeatTitle: "Fin del Camino",
-		DefeatText:  "Aldric cae de rodillas. La oscuridad lo envuelve mientras el frío del acero enemigo se desvanece.\n\nSu historia termina aquí, en un camino olvidado de Valethra. Pero las tierras no olvidan a quienes luchan — aunque caigan.",
+		DefeatTitle:  "Fin del Camino",
+		DefeatText:   "Aldric cae de rodillas. La oscuridad lo envuelve mientras el frío del acero enemigo se desvanece.\n\nSu historia termina aquí, en un camino olvidado de Valethra. Pero las tierras no olvidan a quienes luchan — aunque caigan.",
 	}
 
 	g, err := game.NewGame(cfg)
