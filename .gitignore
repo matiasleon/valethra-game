@@ -411,4 +411,9 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-.agents/
+# Go build output and local OS metadata
+bin/
+.cache/
+valethra
+.DS_Store
+**/.DS_Store

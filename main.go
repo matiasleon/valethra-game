@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"valethra-game/core/entities"
-	entityactions "valethra-game/core/entities/actions"
-	"valethra-game/game"
+	"github.com/matiasleon/valethra-game/core/entities"
+	entityactions "github.com/matiasleon/valethra-game/core/entities/actions"
+	"github.com/matiasleon/valethra-game/game"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -43,7 +43,7 @@ func createHero() *entities.Character {
 		Description: "Un mercenario sin tierra que sobrevive aceptando contratos que otros rechazan.",
 		Attributes: entities.Attributes{
 			Health:       100,
-			AttackPower:  70,
+			AttackPower:  25,
 			Armor:        40,
 			Agility:      15,
 			Intelligence: 10,
