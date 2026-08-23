@@ -2,8 +2,8 @@
 package game
 
 import (
-	"saturday-chill/core"
-	"saturday-chill/core/entities"
+	"valethra-game/core"
+	"valethra-game/core/entities"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -15,10 +15,10 @@ const (
 
 // GameConfig holds all configuration data needed to run the game.
 type GameConfig struct {
-	Hero       *entities.Character
-	Quests     []entities.Quest
-	IntroTitle string
-	IntroText  string
+	Hero         *entities.Character
+	Quests       []entities.Quest
+	IntroTitle   string
+	IntroText    string
 	VictoryTitle string
 	VictoryText  string
 	DefeatTitle  string

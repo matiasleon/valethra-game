@@ -1,6 +1,6 @@
 # Entidades del Juego y Relaciones
 
-Documentación de las entidades del juego **Saturday Chill** (mundo Valethra) y cómo se relacionan entre sí.
+Documentación de las entidades del juego **Valethra Game** y cómo se relacionan entre sí.
 
 ---
 

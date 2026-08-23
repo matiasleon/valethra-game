@@ -1,7 +1,7 @@
 // Package ports defines interfaces for core use cases.
 package ports
 
-import "saturday-chill/core/entities"
+import "valethra-game/core/entities"
 
 // RoundResult contains the outcome of a single combat round for the UI to render.
 type RoundResult struct {

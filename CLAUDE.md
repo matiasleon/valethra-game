@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**saturday-chill** is a fantasy RPG game engine set in the world of Valethra, written in Go 1.21 with zero external dependencies. Early-stage development focused on core combat mechanics and entity architecture.
+**valethra-game** is a fantasy RPG game engine set in the world of Valethra, written in Go 1.21 with zero external dependencies. Early-stage development focused on core combat mechanics and entity architecture.
 
 ## Tech Stack
 
@@ -30,7 +30,7 @@ go build ./...          # Build
 go test ./... -v        # Run tests (verbose)
 go run main.go          # Run
 golangci-lint run       # Lint
-goimports -local saturday-chill ./...  # Format
+goimports -local valethra-game ./...  # Format
 ```
 
 ## Coding Conventions

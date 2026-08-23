@@ -47,8 +47,8 @@ No hay motores pesados como Unity o Unreal. Es puro código y pixel art.
 ### Clonar el repo
 
 ```bash
-git clone https://github.com/tu-usuario/saturday-chill.git
-cd saturday-chill
+git clone https://github.com/tu-usuario/valethra-game.git
+cd valethra-game
 ```
 
 ### Instalar dependencias
@@ -82,7 +82,7 @@ Si todo anda bien, se abre una ventana de 800x600 con el juego corriendo.
 ## Estructura del proyecto
 
 ```
-saturday-chill/
+valethra-game/
 ├── main.go              # Entry point (crea el juego, corre Ebiten)
 ├── core/                # Lógica de negocio (independiente de UI)
 │   ├── entities/        # Character, Quest, Attributes
@@ -113,19 +113,19 @@ Esperá ver algo como:
 
 ```
 PASS
-ok      saturday-chill/core/entities    0.123s
+ok      valethra-game/core/entities    0.123s
 ```
 
 ---
 
-## Roadmap (cosas que quiero agregar)
+## Roadmap por orden de prioridad (cosas que quiero agregar)
 
-- [ ] Más enemigos (esqueletos, magos, dragones)
-- [ ] Sistema de loot (armas, armaduras)
+- [ ] Combate en tiempo real con timing 
 - [ ] Habilidades especiales (ataques críticos, hechizos)
+- [ ] Más enemigos (esqueletos, magos, dragones)
 - [ ] Sonido de combate
 - [ ] Más quests (el mundo de Valethra tiene mucho más para contar)
-- [ ] Combate en tiempo real con timing (experimental)
+
 
 ---
 
@@ -161,7 +161,7 @@ Este proyecto está bajo licencia **MIT**. Hacé lo que quieras con el código, 
 
 Si querés charlar sobre el proyecto, tirar ideas o reportar bugs:
 
-- **GitHub Issues**: [Crear issue](https://github.com/tu-usuario/saturday-chill/issues)
+- **GitHub Issues**: [Crear issue](https://github.com/tu-usuario/valethra-game/issues)
 - **Email**: tu-email@ejemplo.com (opcional)
 
 ---

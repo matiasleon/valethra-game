@@ -1,6 +1,6 @@
 package actions
 
-import "saturday-chill/core/entities"
+import "valethra-game/core/entities"
 
 // DialogueAction represents a dialogue with an NPC (future implementation).
 type DialogueAction struct {

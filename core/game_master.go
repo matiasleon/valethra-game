@@ -2,8 +2,8 @@
 package core
 
 import (
-	"saturday-chill/core/entities"
-	"saturday-chill/core/ports"
+	"valethra-game/core/entities"
+	"valethra-game/core/ports"
 )
 
 // GameMaster orchestrates quest progression and combat execution.
