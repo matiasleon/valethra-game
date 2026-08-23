@@ -11,6 +11,17 @@ Evolve the playable Valethra prototype and its world without presenting proposal
 3. Read the nearest nested `AGENTS.md` before editing under `core/`, `game/`, or `docs/world/`.
 4. Prefer the smallest coherent change. Do not introduce frameworks or abstractions for hypothetical needs.
 
+## Branch guardrail and Gitflow naming
+
+- All bug fixes, features, improvements, refactors, releases, and other changes must be developed on a separate working branch.
+- Never work directly on `main`, `master`, or `develop`.
+- Before modifying files, check the active branch and explicitly tell the user which branch is checked out.
+- If the active branch is `main`, `master`, or `develop`, create or switch to a working branch before editing.
+- Preserve uncommitted local changes when creating or switching branches unless the user explicitly asks otherwise.
+- Follow Gitflow branch naming: `feature/<description>`, `bugfix/<description>`, `hotfix/<description>`, or `release/<version>` as appropriate.
+- Use lowercase `kebab-case` after the prefix, for example `feature/add-inventory` or `bugfix/combat-health-underflow`.
+- Do not add agent- or tool-specific prefixes such as `codex/` to branch names.
+
 ## Reproducible commands
 
 - Setup: `make setup`

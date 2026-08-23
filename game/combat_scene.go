@@ -5,9 +5,9 @@ import (
 	"image/color"
 	"strings"
 
-	"github.com/matiasleon/valethra/core/entities"
-	entityactions "github.com/matiasleon/valethra/core/entities/actions"
-	"github.com/matiasleon/valethra/core/ports"
+	"github.com/matiasleon/valethra-game/core/entities"
+	entityactions "github.com/matiasleon/valethra-game/core/entities/actions"
+	"github.com/matiasleon/valethra-game/core/ports"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"

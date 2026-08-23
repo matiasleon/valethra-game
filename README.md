@@ -14,8 +14,8 @@ Consulta la [guía oficial de instalación de Ebitengine](https://ebitengine.org
 ## Inicio rápido
 
 ```bash
-git clone https://github.com/matiasleon/valethra.git
-cd valethra
+git clone https://github.com/matiasleon/valethra-game.git
+cd valethra-game
 make setup
 make check
 make run

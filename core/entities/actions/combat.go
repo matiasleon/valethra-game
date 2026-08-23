@@ -1,7 +1,7 @@
 // Package actions defines concrete quest action implementations.
 package actions
 
-import "github.com/matiasleon/valethra/core/entities"
+import "github.com/matiasleon/valethra-game/core/entities"
 
 // CombatAction represents a combat encounter with one or more enemies.
 type CombatAction struct {

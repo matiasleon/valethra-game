@@ -2,8 +2,8 @@
 package core
 
 import (
-	"github.com/matiasleon/valethra/core/entities"
-	"github.com/matiasleon/valethra/core/ports"
+	"github.com/matiasleon/valethra-game/core/entities"
+	"github.com/matiasleon/valethra-game/core/ports"
 )
 
 // GameMaster orchestrates quest progression and combat execution.

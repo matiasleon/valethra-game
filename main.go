@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/matiasleon/valethra/core/entities"
-	entityactions "github.com/matiasleon/valethra/core/entities/actions"
-	"github.com/matiasleon/valethra/game"
+	"github.com/matiasleon/valethra-game/core/entities"
+	entityactions "github.com/matiasleon/valethra-game/core/entities/actions"
+	"github.com/matiasleon/valethra-game/game"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )

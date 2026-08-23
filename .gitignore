@@ -415,6 +415,5 @@ FodyWeavers.xsd
 bin/
 .cache/
 valethra
-saturday-chill
 .DS_Store
 **/.DS_Store

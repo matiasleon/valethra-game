@@ -2,8 +2,8 @@
 package game
 
 import (
-	"github.com/matiasleon/valethra/core"
-	"github.com/matiasleon/valethra/core/entities"
+	"github.com/matiasleon/valethra-game/core"
+	"github.com/matiasleon/valethra-game/core/entities"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )

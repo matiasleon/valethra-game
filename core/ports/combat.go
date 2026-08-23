@@ -1,7 +1,7 @@
 // Package ports defines interfaces for core use cases.
 package ports
 
-import "github.com/matiasleon/valethra/core/entities"
+import "github.com/matiasleon/valethra-game/core/entities"
 
 // RoundResult contains the outcome of a single combat round for the UI to render.
 type RoundResult struct {

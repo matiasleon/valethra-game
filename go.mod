@@ -1,4 +1,4 @@
-module github.com/matiasleon/valethra
+module github.com/matiasleon/valethra-game
 
 go 1.25.0
 
