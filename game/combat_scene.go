@@ -5,9 +5,9 @@ import (
 	"image/color"
 	"strings"
 
-	"saturday-chill/core/entities"
-	entityactions "saturday-chill/core/entities/actions"
-	"saturday-chill/core/ports"
+	"github.com/matiasleon/valethra/core/entities"
+	entityactions "github.com/matiasleon/valethra/core/entities/actions"
+	"github.com/matiasleon/valethra/core/ports"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -23,17 +23,17 @@ const (
 )
 
 type CombatScene struct {
-	quest        entities.Quest
-	hero         *entities.Character
-	enemy        *entities.Character
-	heroMax      entities.Attributes
-	enemyMax     entities.Attributes
-	engine       ports.CombatEngine
-	round        int
-	state        CombatState
-	combatLog    []string
-	eventIndex   int // current event within the quest
-	waitingNext  bool // waiting for key press before next event or exit
+	quest       entities.Quest
+	hero        *entities.Character
+	enemy       *entities.Character
+	heroMax     entities.Attributes
+	enemyMax    entities.Attributes
+	engine      ports.CombatEngine
+	round       int
+	state       CombatState
+	combatLog   []string
+	eventIndex  int  // current event within the quest
+	waitingNext bool // waiting for key press before next event or exit
 
 	// Sprite animators
 	heroSprites  *CharacterSprites

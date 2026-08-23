@@ -1,5 +1,7 @@
 # Architecture: v1.0 Linear → v2.0 Open World
 
+> **Status: not implemented.** This historical design is retained as a future direction. The authoritative description of the running code is [`architecture/current.md`](architecture/current.md).
+
 Reference document for migrating Valethra from a linear scene-based RPG (v1.0) to an open-world 2D game with event loop (v2.0).
 
 **Do not implement anything from v2.0 until v1.0 is stable and tagged.**
