@@ -417,3 +417,13 @@ bin/
 valethra
 .DS_Store
 **/.DS_Store
+
+# Godot-generated editor and import state
+**/.godot/
+
+# Web prototype dependencies and generated build output
+**/node_modules/
+prototype-web/dist/
+
+# Local gameplay recordings (regenerate with the QA mode)
+prototype-web/qa/*.webm

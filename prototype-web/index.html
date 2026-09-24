@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07100e" />
+    <meta name="description" content="Recorré el Santuario del Umbral como Aldric en tercera persona. Una jornada de Valethra." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Valethra — El Santuario del Umbral</title>
+  </head>
+  <body>
+    <main id="game" data-phase="loading">
+      <canvas id="world" aria-label="Mundo tridimensional de Valethra"></canvas>
+      <div class="world-wash" aria-hidden="true"></div>
+
+      <section id="hud" class="hud" hidden>
+        <div class="mission">
+          <span class="eyebrow">Último camino a casa</span>
+          <strong id="objective">Buscá los sellos del santuario</strong>
+        </div>
+        <div class="wards" aria-label="Sellos restaurados">
+          <i></i><i></i><i></i><span id="ward-count">0 / 3</span>
+        </div>
+        <div class="vitals">
+          <div class="vital vital--health"><span>Vida</span><div><i id="health"></i></div><b id="health-value">100</b></div>
+          <div class="vital vital--stamina"><span>Resistencia</span><div><i id="stamina"></i></div><b id="stamina-value">100</b></div>
+        </div>
+        <div id="combat-state" class="combat-state" aria-live="polite"><i></i><div><strong></strong><small></small></div></div>
+        <p id="prompt" class="prompt"></p>
+        <aside id="message" class="message" aria-live="polite">
+          <span id="message-title"></span><p id="message-body"></p>
+        </aside>
+        <div class="touch-controls" aria-label="Controles táctiles">
+          <div class="touch-move">
+            <button data-key="KeyW" aria-label="Avanzar">↑</button>
+            <button data-key="KeyA" aria-label="Izquierda">←</button>
+            <button data-key="KeyS" aria-label="Retroceder">↓</button>
+            <button data-key="KeyD" aria-label="Derecha">→</button>
+          </div>
+          <div class="touch-actions">
+            <button data-key="ArrowLeft" aria-label="Girar cámara a izquierda">↶</button>
+            <button data-key="ArrowRight" aria-label="Girar cámara a derecha">↷</button>
+            <button data-key="Space">Atacar</button><button data-key="KeyF">Guardia</button>
+            <button data-key="KeyQ">Esquiva</button><button data-key="KeyE">Usar</button>
+            <button data-key="ShiftLeft">Correr</button><button data-key="Escape">Pausa</button>
+          </div>
+        </div>
+        <div class="controls">WASD Mover · Mouse / ← → Cámara · Shift Correr · Espacio Atacar · F Guardia · Q Esquiva · E Usar · Esc Pausa</div>
+      </section>
+
+      <section id="overlay" class="overlay" aria-live="polite">
+        <div class="loading"><span class="sigil">V</span><p>Abriendo el camino</p></div>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
