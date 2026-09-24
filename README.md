@@ -4,7 +4,7 @@ Prototipo de RPG 2D táctico escrito en Go y Ebitengine. Valethra combina combat
 
 El juego actual permite recorrer dos misiones como Aldric, combatir varios enemigos y ver transiciones narrativas de victoria o derrota. El diseño de mundo abierto documentado en el repositorio es una dirección futura, no funcionalidad ya implementada.
 
-Además, `prototype-web/` contiene el vertical slice V2 experimental construido con TypeScript y Three.js. Es un nivel 3D en tercera persona: tras ocho meses fuera, Aldric debe atravesar un santuario fronterizo, combatir apariciones, restaurar tres sellos y decidir si abre el camino para una familia. Todavía no reemplaza la V1 en Go. El corte anterior en Godot permanece en `prototype-v2/` como referencia de comparación.
+Además, `prototype-web/` contiene el vertical slice V2 experimental construido con TypeScript y Three.js. Es un nivel 3D en tercera persona: tras ocho meses fuera, Aldric debe atravesar un santuario fronterizo, combatir trolls, restaurar tres sellos y decidir si abre el camino para una familia. Todavía no reemplaza la V1 en Go. El corte anterior en Godot permanece en `prototype-v2/` como referencia de comparación.
 
 ## Requisitos
 

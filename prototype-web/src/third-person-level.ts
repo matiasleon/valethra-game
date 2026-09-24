@@ -2,8 +2,8 @@ import * as THREE from "three";
 import { AldricEquipment } from "./aldric-equipment";
 import { AldricActor } from "./aldric-actor";
 import { ThirdPersonCamera } from "./third-person-camera";
-import { ApparitionActor } from "./apparition-actor";
-import { ENEMY_SPAWNS, ENEMY_DAMAGE, advanceEnemy, createEnemyState, type EnemyCombatState } from "./enemy-combat";
+import { TrollActor } from "./troll-actor";
+import { ENEMY_SPAWNS, ENEMY_DAMAGE, ENEMY_DEATH_DURATION, advanceEnemy, createEnemyState, type EnemyCombatState } from "./enemy-combat";
 import { damping } from "./locomotion";
 
 import {
@@ -23,7 +23,7 @@ import { SanctuaryWorld, type Ward } from "./sanctuary-world";
 import { disposeScene } from "./scene-resources";
 
 interface Enemy extends EnemyCombatState {
-  actor: ApparitionActor;
+  actor: TrollActor;
   index: number;
   defenseDemonstrated: boolean;
 }
@@ -222,7 +222,7 @@ export class ThirdPersonLevel {
 
   private createEnemies(): void {
     ENEMY_SPAWNS.forEach((_, index) => {
-      const actor = new ApparitionActor(index);
+      const actor = new TrollActor(index);
       this.scene.add(actor.root);
       this.enemies.push({ ...createEnemyState(), actor, index, defenseDemonstrated: false });
     });
@@ -316,9 +316,9 @@ export class ThirdPersonLevel {
       hit = true;
       if (enemy.health <= 0) {
         enemy.alive = false;
-        enemy.deathTime = 0.62;
+        enemy.deathTime = ENEMY_DEATH_DURATION;
         this.health = Math.min(this.health + 12, MAX_HEALTH);
-        this.callbacks.onMessage("La aparición se disipa", "Sólo queda un olor a hierro húmedo sobre la tierra.");
+        this.callbacks.onMessage("El troll cae", "El peso del cuerpo levanta el polvo del camino.");
       }
       break;
     }
@@ -487,7 +487,7 @@ export class ThirdPersonLevel {
           } else {
             this.damageFlash = 0.32;
             this.callbacks.onCombatCue("hit");
-            this.callbacks.onPrompt("La aparición te alcanza");
+            this.callbacks.onPrompt("El troll te alcanza");
           }
           if (this.health <= 0) {
             this.pause();

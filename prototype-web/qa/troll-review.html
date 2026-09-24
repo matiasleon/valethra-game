@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Valethra · Revisión del troll</title>
+<style>body{margin:0;background:#182022;color:#eee;font:16px system-ui}canvas{display:block;width:100vw;height:75vh}section{padding:16px;display:grid;gap:12px}input{width:100%}button{padding:10px;background:#35433a;color:white;border:1px solid #b9a174}label{display:block}</style></head>
+<body><canvas aria-label="Troll de Valethra"></canvas><section><label for="time">Caída · <output id="time-label">0.00 s</output></label><input id="time" type="range" min="0" max="1.8" value="0" step="0.01"><button id="play">Reproducir caída</button><button id="idle">Ver troll de pie</button></section>
+<script type="module">
+import * as THREE from 'three';
+import { TrollActor } from '/src/troll-actor.ts';
+import { createEnemyState, ENEMY_DEATH_DURATION } from '/src/enemy-combat.ts';
+const canvas = document.querySelector('canvas');
+const slider = document.querySelector('#time');
+const label = document.querySelector('#time-label');
+const renderer = new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.shadowMap.enabled=true;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x182022);
+scene.add(new THREE.HemisphereLight(0xc5d5d2,0x3b352b,3));
+const key=new THREE.DirectionalLight(0xffdfae,4); key.position.set(3,7,5);key.castShadow=true;scene.add(key);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(20,20),new THREE.MeshStandardMaterial({color:0x424b45,roughness:1}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+const camera=new THREE.PerspectiveCamera(42,1,0.1,50);camera.position.set(4,3,6);camera.lookAt(0,1,0);
+const actor=new TrollActor(0);scene.add(actor.root);
+let playing=false;let start=0;
+function pose(time,dead=true){
+ actor.reset();const state=createEnemyState();actor.update(state,0,0,0,false);
+ if(dead){state.alive=false;for(let t=0;t<time;t+=1/60){state.deathTime=ENEMY_DEATH_DURATION-t;actor.update(state,t,1/60,0,false);}state.deathTime=ENEMY_DEATH_DURATION-time;actor.update(state,time,1/60,0,false);}
+ label.textContent=time.toFixed(2)+' s';slider.value=String(time);renderer.render(scene,camera);
+}
+function resize(){renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);camera.aspect=canvas.clientWidth/canvas.clientHeight;camera.updateProjectionMatrix();renderer.render(scene,camera);}
+new ResizeObserver(resize).observe(canvas);
+slider.addEventListener('input',()=>{playing=false;pose(Number(slider.value));});
+document.querySelector('#idle').addEventListener('click',()=>{playing=false;pose(0,false);});
+document.querySelector('#play').addEventListener('click',()=>{playing=true;start=performance.now();});
+function animate(now){requestAnimationFrame(animate);if(playing){const time=Math.min(ENEMY_DEATH_DURATION,(now-start)/1000);pose(time);if(time===ENEMY_DEATH_DURATION)playing=false;}}
+pose(0,false);requestAnimationFrame(animate);
+</script></body></html>

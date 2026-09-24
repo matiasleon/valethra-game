@@ -1,5 +1,6 @@
 export const ENEMY_WINDUP = 0.9;
 export const ENEMY_RECOVERY = 1.18;
+export const ENEMY_DEATH_DURATION = 1.8;
 export const ENEMY_DAMAGE = 15;
 export const ENEMY_SPAWNS = [[-10, 3], [9, -9], [-5, -22], [5, -27]] as const;
 

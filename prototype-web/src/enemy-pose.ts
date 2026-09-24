@@ -16,6 +16,5 @@ export function sampleEnemyPose(state: Readonly<EnemyCombatState>) {
     lean: attacking ? -0.12 * preparation + 0.4 * swing : 0.28 * recovery,
     warning: attacking ? preparation : 0,
     recoil: smooth(state.hitFlash / 0.22),
-    dissolve: state.alive ? 1 : Math.max(0, state.deathTime / 0.62),
   };
 }

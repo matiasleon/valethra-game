@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import * as THREE from "three";
 import { disposeScene } from "./scene-resources";
 import { SanctuaryWorld } from "./sanctuary-world";
-import { ApparitionActor } from "./apparition-actor";
+import { TrollActor } from "./troll-actor";
 import { createEnemyState } from "./enemy-combat";
 
 describe("scene ownership", () => {
@@ -35,15 +35,15 @@ describe("scene ownership", () => {
     expect(world.wards.every(ward => !ward.active && ward.core.material.emissiveIntensity === 0.18)).toBe(true);
     disposeScene(scene);
   });
-  it("animating/dissolving an enemy never moves its combat origin and resets for replay", () => {
-    const actor = new ApparitionActor(0);
+  it("animating/falling an enemy never moves its combat origin and resets for replay", () => {
+    const actor = new TrollActor(0);
     actor.root.position.set(1, 0, 2);
     const state = createEnemyState(); state.attackWindup = 0.2;
     actor.update(state, 4, 1 / 60, 0.2, true);
     expect(actor.root.position.toArray()).toEqual([1, 0, 2]);
     state.alive = false; state.deathTime = 0;
     actor.update(state, 5, 1 / 60, 0, false);
-    expect(actor.root.visible).toBe(false);
+    expect(actor.root.visible).toBe(true);
     actor.reset(); actor.update(createEnemyState(), 0, 0, 0, false);
     expect(actor.root.visible).toBe(true);
     const scene = new THREE.Scene(); scene.add(actor.root); disposeScene(scene);

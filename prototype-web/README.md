@@ -2,7 +2,7 @@
 
 Vertical slice experimental de Valethra construido con TypeScript, Three.js y HTML/CSS. Presenta un único nivel 3D en tercera persona: **El Santuario del Umbral**.
 
-Aldric regresa a su pueblo después de ocho meses en una misión peligrosa. El último camino atraviesa un santuario abandonado. Para abrir su portón debe explorar las ruinas, restaurar tres sellos y sobrevivir a cuatro apariciones. El carro roto, los escudos abandonados, una campana silenciada y una cuna vacía cuentan qué ocurrió sin convertirlo en una explicación explícita.
+Aldric regresa a su pueblo después de ocho meses en una misión peligrosa. El último camino atraviesa un santuario abandonado. Para abrir su portón debe explorar las ruinas, restaurar tres sellos y sobrevivir a cuatro trolls. El carro roto, los escudos abandonados, una campana silenciada y una cuna vacía cuentan qué ocurrió sin convertirlo en una explicación explícita.
 
 ## Controles
 
@@ -44,6 +44,8 @@ La cámara, el actor visual y la locomoción se separan de las reglas del santua
 
 ## Código y animaciones
 
-El santuario separa escenario, contratos, reglas de combate, poses y actores visuales. Las apariciones anticipan el ataque, golpean con el arma vinculada a la mano, recuperan la postura y reaccionan al daño; la pose de impacto coincide con el temporizador del combate. No se agregaron encuentros ni historias. Los archivos web del puente anterior y sus retratos duplicados fueron retirados porque no tenían consumidores; el experimento Godot permanece en `../prototype-v2/`.
+El santuario separa escenario, contratos, reglas de combate, poses y actores visuales. Los trolls anticipan el ataque, golpean con el arma vinculada a la mano, recuperan la postura y reaccionan al daño; la pose de impacto coincide con el temporizador del combate. No se agregaron encuentros ni historias. Los archivos web del puente anterior y sus retratos duplicados fueron retirados porque no tenían consumidores; el experimento Godot permanece en `../prototype-v2/`.
 
 `make v2-check` cubre reglas, temporización de enemigos, continuidad de poses, cámara, reinicio del mundo y liberación de recursos compartidos. `/?autoplay=1&record=1` verifica el final abierto y permite descargar una grabación; `/?autoplay=1&ending=seal` recorre el final sellado. Las grabaciones se detienen como máximo a los tres minutos.
+
+La muerte del troll dura 1,8 segundos: reacción al golpe, rodillas que ceden, caída lateral, impacto y reposo. La maza se desprende y el cuerpo permanece con su volumen original. Es una animación articulada procedural, no un ragdoll físico. `/qa/troll-review.html` permite revisar la caída paso a paso durante desarrollo, sin añadir una escena al juego. Las pruebas cubren estabilidad y reinicio a 30, 60 y 120 FPS.
